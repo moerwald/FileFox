@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FileFox.Core/FileFox.Core.csproj" />
+    <Project Path="src/FileFox.Infrastructure/FileFox.Infrastructure.csproj" />
+    <Project Path="src/FileFox.Cli/FileFox.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FileFox.Core.Tests/FileFox.Core.Tests.csproj" />
+    <Project Path="tests/FileFox.Infrastructure.Tests/FileFox.Infrastructure.Tests.csproj" />
+    <Project Path="tests/FileFox.Cli.Tests/FileFox.Cli.Tests.csproj" />
+  </Folder>
+</Solution>

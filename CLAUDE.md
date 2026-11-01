@@ -13,6 +13,12 @@
 - Version 1 is a command-line app with colored output. The WPF GUI comes later and must reuse the same core library.
 - See `docs/plan/05-architecture.md`.
 
+## Specifications and tests
+- Every feature has a specification in `docs/specs/` with numbered requirements (e.g. `F1-20`), written before or together with the code.
+- Tests are derived from the specification, not from the implementation. Each test names the requirement(s) it verifies with `[Trait("Spec", "F1-20")]`.
+- If code and specification disagree, the specification wins – or the specification is changed first, with the user's agreement.
+- Requirements that cannot be tested automatically are marked *(manual)* in the specification.
+
 ## Git workflow
 - Implement every feature on its own branch (e.g. `feature/<short-name>`), never directly on `main`.
 - When the feature is done, push the branch and open a pull request against `main` for the user to review.

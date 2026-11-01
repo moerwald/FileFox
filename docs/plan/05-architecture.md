@@ -35,15 +35,18 @@ The front ends reference Core and Infrastructure only to register services. Core
 
 | Interface | Responsibility |
 |-----------|----------------|
+| `IFolderReader` | List the PDF files in a folder (file system access) |
+| `IInvoiceFileLocator` | Pick the invoice files, skip bank statements |
 | `IPdfTextExtractor` | Extract text per page from a PDF |
 | `IPdfTypeDetector` | Classify a PDF as real PDF, scan with text layer, or scan |
-| `IStatementLocator` | Find the bank statement file in a folder |
 | `IStatementParser` | Turn the bank statement text into booking lines |
-| `IInvoiceAnalyzer` | Extract company, invoice number, amount, category (Ollama implementation) |
+| `IInvoiceAnalyzer` | Extract company, invoice number, amount and line items with categories (Ollama implementation) |
+| `IInvoiceCategoryResolver` | Map item categories to the configured list and pick the invoice category |
+| `ILanguageModelStatusProvider` | Check that Ollama runs and the model is installed |
 | `IBookingMatcher` | Find the booking that belongs to an invoice |
 | `IFileNameBuilder` | Build `MM-DD_InvoiceNumber_Company-Category.pdf` and clean invalid characters |
 | `IFileRenamer` | Rename files safely and write the undo log |
-| `IInvoiceProcessingService` | Orchestrates the whole workflow; the only service the front ends call |
+| `IInvoiceAnalysisService` | Orchestrates the analysis; the only service the front ends call |
 | `IProgress<T>` | Progress reporting from Core to the front end (standard .NET) |
 
 Models (examples): `InvoiceInfo`, `Booking`, `RenameProposal`, `PdfType`, `FileFoxOptions`.
