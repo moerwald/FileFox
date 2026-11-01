@@ -86,6 +86,8 @@ Every setting can be overridden with an environment variable, e.g.
 
 ## Tests
 
+[![Build and test](https://github.com/moerwald/FileFox/actions/workflows/build.yml/badge.svg)](https://github.com/moerwald/FileFox/actions/workflows/build.yml)
+
 ```
 dotnet test
 ```
