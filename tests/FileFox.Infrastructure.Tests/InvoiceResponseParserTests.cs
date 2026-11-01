@@ -19,6 +19,8 @@ public class InvoiceResponseParserTests
         """;
 
     [Fact]
+    [Trait("Spec", "F1-30")]
+    [Trait("Spec", "F1-31")]
     public void Parses_a_complete_answer()
     {
         var invoice = InvoiceResponseParser.Parse(FullAnswer);
@@ -35,6 +37,7 @@ public class InvoiceResponseParserTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-34")]
     public void Accepts_amounts_and_dates_in_german_format()
     {
         const string answer = """
@@ -52,6 +55,7 @@ public class InvoiceResponseParserTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-35")]
     public void Missing_fields_become_empty_or_null()
     {
         var invoice = InvoiceResponseParser.Parse("""{ "company": "Amazon" }""");
@@ -65,6 +69,7 @@ public class InvoiceResponseParserTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-35")]
     public void Line_items_without_description_are_ignored()
     {
         var invoice = InvoiceResponseParser.Parse("""
@@ -76,6 +81,7 @@ public class InvoiceResponseParserTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-30")]
     public void Numeric_invoice_number_is_kept_as_text()
     {
         var invoice = InvoiceResponseParser.Parse("""{ "invoiceNumber": 123456 }""");
@@ -84,6 +90,7 @@ public class InvoiceResponseParserTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-36")]
     public void Markdown_code_fence_is_removed()
     {
         var invoice = InvoiceResponseParser.Parse("```json\n{ \"company\": \"Amazon\" }\n```");
@@ -92,6 +99,7 @@ public class InvoiceResponseParserTests
     }
 
     [Theory]
+    [Trait("Spec", "F1-36")]
     [InlineData("this is not json")]
     [InlineData("[1, 2, 3]")]
     public void Invalid_answer_throws_a_clear_error(string answer)
@@ -101,6 +109,7 @@ public class InvoiceResponseParserTests
     }
 
     [Theory]
+    [Trait("Spec", "F1-34")]
     [InlineData("2026-11-10")]
     [InlineData("10.11.2026")]
     [InlineData("10/11/2026")]

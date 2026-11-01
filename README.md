@@ -94,6 +94,13 @@ dotnet test
 
 The tests use fake implementations and need neither Ollama nor real invoices.
 
+Tests are derived from the specification in [docs/specs](docs/specs/feature-1-invoice-analysis.md).
+Every test is tagged with the requirement it verifies, so you can run the tests for one requirement:
+
+```
+dotnet test --filter "Spec=F1-42"
+```
+
 ## Architecture
 
 ```
@@ -104,6 +111,7 @@ src/
 tests/
   FileFox.Core.Tests/
   FileFox.Infrastructure.Tests/
+  FileFox.Cli.Tests/       CLI behavior, settings, wiring and end-to-end tests with real PDFs
 ```
 
 The CLI only talks to `IInvoiceAnalysisService`. Everything is wired with dependency injection, so the planned WPF front end can reuse the same core. Details: [docs/plan/05-architecture.md](docs/plan/05-architecture.md).

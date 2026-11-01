@@ -10,6 +10,7 @@ public class OllamaModelStatusProviderTests
         new(new OllamaClient(handler.CreateClient()), MsOptions.Create(new OllamaOptions { Model = model }));
 
     [Fact]
+    [Trait("Spec", "F1-10")]
     public async Task Installed_model_is_available()
     {
         var handler = FakeHttpHandler.Json("""{ "models": [ { "name": "llama3.2:3b" }, { "name": "qwen2.5:7b" } ] }""");
@@ -21,6 +22,7 @@ public class OllamaModelStatusProviderTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-12")]
     public async Task Missing_model_explains_how_to_install_it()
     {
         var handler = FakeHttpHandler.Json("""{ "models": [ { "name": "llama3.2:3b" } ] }""");
@@ -33,6 +35,7 @@ public class OllamaModelStatusProviderTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-11")]
     public async Task Unreachable_server_is_reported()
     {
         var handler = FakeHttpHandler.Throws(new HttpRequestException("Connection refused", new SocketException()));
@@ -44,6 +47,7 @@ public class OllamaModelStatusProviderTests
     }
 
     [Theory]
+    [Trait("Spec", "F1-13")]
     [InlineData("qwen2.5:latest", "qwen2.5", true)]
     [InlineData("qwen2.5:7b", "QWEN2.5:7B", true)]
     [InlineData("qwen2.5:3b", "qwen2.5:7b", false)]

@@ -1,5 +1,7 @@
 # 03 – Scan Detection
 
+Binding rules: [Specification F1-20 – F1-25](../specs/feature-1-invoice-analysis.md#3-pdf-type-scan-detection).
+
 FileFox must decide on its own whether a PDF is a **real PDF** or a **scan**.
 
 - **Real PDF:** created digitally, e.g. an invoice downloaded from Amazon. It contains real, selectable text.
@@ -16,9 +18,9 @@ PdfPig can only read real text. A scan without a text layer would give the langu
 
 | Result | Rule | Action |
 |--------|------|--------|
-| **Real PDF** | Enough readable text (e.g. > 20 characters per page) | Process normally |
+| **Real PDF** | Enough readable text (at least 20 non-whitespace characters on a page, at least half of them letters or digits) | Process normally |
 | **Scan with text layer** | Large page image **and** readable text (some scanners add invisible OCR text) | Process, but mark the row for review |
-| **Scan** | Little or no text and a large page image | Mark as "Scan – not readable" and skip; do not send to the model |
+| **Scan** | No page with readable text (with or without images) | Mark as "Scan – not readable" and skip; do not send to the model |
 
 The threshold (20 characters) must be configurable.
 

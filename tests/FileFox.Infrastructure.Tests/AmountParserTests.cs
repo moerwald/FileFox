@@ -5,6 +5,7 @@ namespace FileFox.Infrastructure.Tests;
 public class AmountParserTests
 {
     [Theory]
+    [Trait("Spec", "F1-34")]
     [InlineData("12.34", "12.34")]
     [InlineData("12,34", "12.34")]
     [InlineData("12,34 €", "12.34")]
@@ -20,6 +21,8 @@ public class AmountParserTests
     }
 
     [Theory]
+    [Trait("Spec", "F1-34")]
+    [Trait("Spec", "F1-35")]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]

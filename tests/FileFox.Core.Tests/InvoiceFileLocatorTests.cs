@@ -11,6 +11,8 @@ public class InvoiceFileLocatorTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-04")]
+    [Trait("Spec", "F1-05")]
     public void Bank_statements_are_excluded_and_invoices_are_sorted()
     {
         var reader = new FakeFolderReader("ikea.pdf", "Kontoauszug_2026_11.pdf", "Amazon.pdf", "bank-STATEMENT-nov.pdf");
@@ -22,6 +24,7 @@ public class InvoiceFileLocatorTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-04")]
     public void Without_patterns_every_pdf_is_an_invoice()
     {
         var reader = new FakeFolderReader("a.pdf", "Kontoauszug.pdf");

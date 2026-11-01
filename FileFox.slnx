@@ -7,5 +7,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/FileFox.Core.Tests/FileFox.Core.Tests.csproj" />
     <Project Path="tests/FileFox.Infrastructure.Tests/FileFox.Infrastructure.Tests.csproj" />
+    <Project Path="tests/FileFox.Cli.Tests/FileFox.Cli.Tests.csproj" />
   </Folder>
 </Solution>

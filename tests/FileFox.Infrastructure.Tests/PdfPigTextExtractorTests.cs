@@ -33,6 +33,8 @@ public sealed class PdfPigTextExtractorTests : IDisposable
     }
 
     [Fact]
+    [Trait("Spec", "F1-20")]
+    [Trait("Spec", "F1-30")]
     public async Task Extracts_text_of_every_page()
     {
         var path = CreatePdf("Invoice number INV-2026-0042", "Total 12.99 EUR");
@@ -47,6 +49,8 @@ public sealed class PdfPigTextExtractorTests : IDisposable
     }
 
     [Fact]
+    [Trait("Spec", "F1-21")]
+    [Trait("Spec", "F1-22")]
     public async Task Page_without_text_and_images_has_empty_text_and_no_coverage()
     {
         var path = CreatePdf("");
@@ -59,6 +63,7 @@ public sealed class PdfPigTextExtractorTests : IDisposable
     }
 
     [Fact]
+    [Trait("Spec", "F1-25")]
     public async Task Broken_file_throws()
     {
         var path = Path.Combine(_folder, "broken.pdf");

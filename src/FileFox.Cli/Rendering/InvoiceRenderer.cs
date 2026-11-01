@@ -147,7 +147,7 @@ internal sealed class InvoiceRenderer(IAnsiConsole console)
         _ => $"[{Label}]unknown[/]",
     };
 
-    private static string StatusColor(AnalysisStatus status) => status switch
+    internal static string StatusColor(AnalysisStatus status) => status switch
     {
         AnalysisStatus.Success => Ok,
         AnalysisStatus.NeedsReview => Review,

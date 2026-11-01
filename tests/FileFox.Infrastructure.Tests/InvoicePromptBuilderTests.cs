@@ -16,6 +16,7 @@ public class InvoicePromptBuilderTests
     };
 
     [Fact]
+    [Trait("Spec", "F1-42")]
     public void System_prompt_lists_categories_with_descriptions()
     {
         var prompt = InvoicePromptBuilder.BuildSystemPrompt(Options());
@@ -26,6 +27,7 @@ public class InvoicePromptBuilderTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-40")]
     public void Schema_restricts_categories_to_configured_names_plus_fallback()
     {
         var schema = InvoicePromptBuilder.BuildSchema(Options());
@@ -38,6 +40,7 @@ public class InvoicePromptBuilderTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-40")]
     public void Fallback_is_not_duplicated_when_it_is_a_configured_category()
     {
         var options = Options();
@@ -50,11 +53,38 @@ public class InvoicePromptBuilderTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-32")]
     public void Long_invoice_text_is_truncated()
     {
         var prompt = InvoicePromptBuilder.BuildUserPrompt(new string('x', 500), maxCharacters: 100);
 
         Assert.Contains(new string('x', 100), prompt);
         Assert.DoesNotContain(new string('x', 101), prompt);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-30")]
+    [Trait("Spec", "F1-31")]
+    public void System_prompt_explains_what_is_and_is_not_extracted()
+    {
+        var prompt = InvoicePromptBuilder.BuildSystemPrompt(Options());
+
+        Assert.Contains("seller, not the customer", prompt);
+        Assert.Contains("Do not list subtotals, tax lines, payment information or free shipping", prompt);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-30")]
+    [Trait("Spec", "F1-31")]
+    [Trait("Spec", "F1-40")]
+    public void Schema_requires_invoice_fields_and_a_category_per_line_item()
+    {
+        var schema = InvoicePromptBuilder.BuildSchema(Options());
+
+        var required = schema["required"]!.AsArray().Select(n => n!.GetValue<string>());
+        Assert.Equal(new[] { "company", "invoiceNumber", "invoiceDate", "currency", "totalAmount", "lineItems" }, required);
+
+        var itemRequired = schema["properties"]!["lineItems"]!["items"]!["required"]!.AsArray().Select(n => n!.GetValue<string>());
+        Assert.Contains("category", itemRequired);
     }
 }

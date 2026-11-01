@@ -7,6 +7,8 @@ public class InvoiceCategoryResolverTests
     private readonly InvoiceCategoryResolver _resolver = new(TestData.Options());
 
     [Fact]
+    [Trait("Spec", "F1-43")]
+    [Trait("Spec", "F1-44")]
     public void Single_category_is_not_mixed()
     {
         var invoice = TestData.Invoice(
@@ -20,6 +22,8 @@ public class InvoiceCategoryResolverTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-43")]
+    [Trait("Spec", "F1-44")]
     public void Category_with_highest_amount_wins_and_is_marked_mixed()
     {
         var invoice = TestData.Invoice(
@@ -33,6 +37,7 @@ public class InvoiceCategoryResolverTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-41")]
     public void Categories_are_matched_case_insensitive_and_use_configured_spelling()
     {
         var invoice = TestData.Invoice(TestData.Item("USB stick", 12.99m, "it-hardware"));
@@ -44,6 +49,7 @@ public class InvoiceCategoryResolverTests
     }
 
     [Theory]
+    [Trait("Spec", "F1-41")]
     [InlineData("Toys")]
     [InlineData("")]
     [InlineData(null)]
@@ -57,6 +63,7 @@ public class InvoiceCategoryResolverTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-43")]
     public void Without_prices_the_most_frequent_category_wins()
     {
         var invoice = TestData.Invoice(
@@ -71,6 +78,7 @@ public class InvoiceCategoryResolverTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-43")]
     public void Tie_is_broken_by_category_order_in_settings()
     {
         var invoice = TestData.Invoice(
@@ -81,6 +89,7 @@ public class InvoiceCategoryResolverTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-43")]
     public void Invoice_without_items_gets_fallback_category()
     {
         var result = _resolver.Resolve(TestData.Invoice());

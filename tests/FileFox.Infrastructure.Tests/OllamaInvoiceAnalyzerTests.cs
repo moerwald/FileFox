@@ -20,6 +20,7 @@ public class OllamaInvoiceAnalyzerTests
         }));
 
     [Fact]
+    [Trait("Spec", "F1-33")]
     public async Task Sends_a_structured_chat_request_and_parses_the_answer()
     {
         var handler = FakeHttpHandler.Json(ChatResponse("""
@@ -52,6 +53,7 @@ public class OllamaInvoiceAnalyzerTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-37")]
     public async Task Http_error_is_reported_with_details()
     {
         var handler = FakeHttpHandler.Json("""{ "error": "model 'qwen2.5:7b' not found" }""", System.Net.HttpStatusCode.NotFound);
@@ -62,11 +64,42 @@ public class OllamaInvoiceAnalyzerTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-22")]
     public async Task Empty_text_is_rejected_without_calling_the_model()
     {
         var handler = FakeHttpHandler.Json("{}");
 
         await Assert.ThrowsAsync<ArgumentException>(() => CreateAnalyzer(handler).AnalyzeAsync("  "));
         Assert.Empty(handler.Requests);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-36")]
+    public async Task Answer_that_is_not_json_is_reported_clearly()
+    {
+        var handler = FakeHttpHandler.Json(ChatResponse("Sorry, I cannot read this invoice."));
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => CreateAnalyzer(handler).AnalyzeAsync("some text"));
+
+        Assert.Contains("language model", ex.Message);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-32")]
+    [Trait("Spec", "F1-33")]
+    public async Task Invoice_text_in_the_request_is_limited_to_max_characters()
+    {
+        var handler = FakeHttpHandler.Json(ChatResponse("{}"));
+        var analyzer = new OllamaInvoiceAnalyzer(
+            new OllamaClient(handler.CreateClient()),
+            MsOptions.Create(new OllamaOptions { MaxInvoiceCharacters = 50 }),
+            MsOptions.Create(new FileFoxOptions()));
+
+        await analyzer.AnalyzeAsync(new string('x', 200));
+
+        using var json = JsonDocument.Parse(handler.Requests[0].Body);
+        var userPrompt = json.RootElement.GetProperty("messages")[1].GetProperty("content").GetString()!;
+        Assert.Contains(new string('x', 50), userPrompt);
+        Assert.DoesNotContain(new string('x', 51), userPrompt);
     }
 }
