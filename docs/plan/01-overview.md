@@ -29,7 +29,8 @@ Example categories: `IT`, `Home`, `Car`, `Groceries`, `Other`. The list must be 
 ## Constraints
 - Runs **fully offline** – no cloud services.
 - Platform: **Windows**.
-- Technology: **C#, WPF, .NET 10**.
+- Technology: **C#, .NET 10**. Version 1 is a **command-line app**, a **WPF GUI** follows later.
+- Business logic is separated from the UI (interfaces + dependency injection), see [05-architecture.md](05-architecture.md).
 - Hardware: **no GPU / no VRAM**, max. **32 GB RAM**.
 - Invoices are normally real (digitally created) PDFs, not scans.
 
@@ -37,12 +38,13 @@ Example categories: `IT`, `Home`, `Car`, `Groceries`, `Other`. The list must be 
 
 | Topic | Decision | Reason |
 |-------|----------|--------|
-| UI | WPF | Native Windows desktop app; review table before renaming |
+| UI | CLI with colored output (Spectre.Console) first, WPF later | Focus on the logic first; both front ends share one core |
+| Architecture | Core library + interfaces + DI | Thin presentation layer, testable logic |
 | PDF text extraction | PdfPig (NuGet) | Free, managed, works offline |
 | Intelligence | Small language model via **Ollama** on `localhost:11434` | Handles invoices with different layouts; runs offline on CPU |
 | Model | Qwen 2.5 7B (Q4), fall back to 3B if too slow | Good quality, ~3–6 GB RAM |
 | Category assignment | Model picks from the fixed list; user can correct in the table | Automatic, but user stays in control |
-| Renaming | Only after the user clicks "Rename" | No surprises; mistakes can be fixed first |
+| Renaming | Only after the user confirms | No surprises; mistakes can be fixed first |
 | Scans | Detected automatically and skipped | No OCR needed for now (see [03-scan-detection.md](03-scan-detection.md)) |
 
 ## Hardware assessment

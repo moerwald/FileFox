@@ -6,17 +6,18 @@
 - [ ] Pull a small model, e.g. `qwen2.5:7b` (or `qwen2.5:3b` for more speed).
 - [ ] Test by hand: give the model the text of one invoice and check that company and invoice number are correct.
 
-## Phase 2 – Project and UI
-- [ ] Create a WPF project targeting .NET 10.
-- [ ] Add the NuGet package **PdfPig**.
-- [ ] Build the main window:
-  - folder picker (`OpenFolderDialog`)
-  - "Analyze" button
-  - "Rename" button
-  - status line
-  - editable table with the proposals
-- [ ] Table columns: old file name, PDF type, company, invoice number, amount, category, booking date, new file name.
-- [ ] Move categories and model name into a settings file (e.g. `appsettings.json`) so they can change without a rebuild.
+## Phase 2 – Solution structure and CLI
+See [05-architecture.md](05-architecture.md) for the layering rules.
+- [ ] Create the solution with `FileFox.Core`, `FileFox.Infrastructure`, `FileFox.Cli` and test projects, all targeting .NET 10.
+- [ ] Define the core interfaces and models in `FileFox.Core`.
+- [ ] Add **PdfPig** to `FileFox.Infrastructure` only.
+- [ ] Set up dependency injection and configuration (`Microsoft.Extensions.Hosting`, `appsettings.json`).
+- [ ] Build the CLI with **Spectre.Console** (colored output):
+  - `analyze <folder>` – show proposals, change nothing
+  - `rename <folder>` – show proposals, confirm, rename
+  - `undo <folder>` – undo the last rename
+- [ ] Proposal table columns: old file name, PDF type, company, invoice number, amount, category, booking date, new file name.
+- [ ] Categories, model name and thresholds come from `appsettings.json`, not from code.
 
 ## Phase 3 – Read PDFs and detect scans
 - [ ] Find the bank statement by its file name (e.g. contains "Kontoauszug" / "statement"); all other PDFs are invoices.
@@ -47,9 +48,9 @@
 
 ## Phase 6 – Review and rename
 - [ ] Show the proposed new name per invoice: `MM-DD_InvoiceNumber_Company-Category.pdf`.
-- [ ] Mark uncertain rows, e.g. "no booking found" or "scan".
-- [ ] Let the user edit every value in the table.
-- [ ] Rename only after the user clicks "Rename".
+- [ ] Mark uncertain rows with colors, e.g. yellow for "needs review", red for "no booking found" or "scan".
+- [ ] CLI: let the user confirm or skip each uncertain row (interactive prompt).
+- [ ] Rename only after the user confirms.
 - [ ] Never overwrite an existing file.
 - [ ] Replace characters that are not allowed in Windows file names.
 - [ ] Write a log file (`old name → new name`) so every rename can be undone.
@@ -59,3 +60,8 @@
 - [ ] Add one scanned PDF on purpose to test the scan detection.
 - [ ] Compare 3B and 7B models; use 3B if it is accurate enough (faster).
 - [ ] Add unit tests for: date parsing, file name building, scan detection, booking matching.
+
+## Phase 8 – WPF GUI (later)
+- [ ] Add `FileFox.Wpf` on top of the existing Core and Infrastructure – no new business logic.
+- [ ] Reuse the same DI registration and `appsettings.json`.
+- [ ] Folder picker, "Analyze" and "Rename" buttons, status line, editable proposal table.
