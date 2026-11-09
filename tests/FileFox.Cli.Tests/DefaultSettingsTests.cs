@@ -41,6 +41,13 @@ public class DefaultSettingsTests
     }
 
     [Fact]
+    [Trait("Spec", "F1-08")]
+    public void Default_invoice_folder_is_empty()
+    {
+        Assert.Equal("", FileFox.InvoiceFolder);
+    }
+
+    [Fact]
     [Trait("Spec", "F1-04")]
     public void Default_statement_patterns()
     {

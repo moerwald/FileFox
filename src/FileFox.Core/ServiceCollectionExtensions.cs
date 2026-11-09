@@ -14,6 +14,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IPdfTypeDetector, PdfTypeDetector>();
         services.AddSingleton<IInvoiceFileLocator, InvoiceFileLocator>();
+        services.AddSingleton<IInvoiceFolderResolver, InvoiceFolderResolver>();
         services.AddSingleton<IInvoiceCategoryResolver, InvoiceCategoryResolver>();
         services.AddTransient<IInvoiceAnalysisService, InvoiceAnalysisService>();
         return services;

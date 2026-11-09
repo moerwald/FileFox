@@ -8,7 +8,7 @@ using Spectre.Console.Cli;
 namespace FileFox.Cli.Commands;
 
 /// <summary>
-/// <c>filefox analyze &lt;folder&gt;</c> – shows invoice data, line items and suggested categories.
+/// <c>filefox analyze [folder]</c> – shows invoice data, line items and suggested categories.
 /// Presentation only: all logic lives in <see cref="IInvoiceAnalysisService"/>.
 /// </summary>
 internal sealed class AnalyzeCommand(
@@ -18,18 +18,20 @@ internal sealed class AnalyzeCommand(
 {
     public sealed class Settings : CommandSettings
     {
-        [CommandArgument(0, "<folder>")]
-        [Description("Folder that contains the invoice PDFs.")]
-        public string Folder { get; init; } = "";
-
-        public override ValidationResult Validate() =>
-            Directory.Exists(Folder)
-                ? ValidationResult.Success()
-                : ValidationResult.Error($"Folder not found: {Folder}");
+        [CommandArgument(0, "[folder]")]
+        [Description("Folder that contains the invoice PDFs. If left out, FileFox:InvoiceFolder from appsettings.json is used.")]
+        public string? Folder { get; init; }
     }
 
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
+        var folder = analysisService.ResolveFolder(settings.Folder);
+        if (!folder.IsValid)
+        {
+            renderer.RenderError(folder.Error!);
+            return ExitCodes.Error;
+        }
+
         using var cancellation = new CancellationTokenSource();
         ConsoleCancelEventHandler onCancel = (_, e) =>
         {
@@ -40,7 +42,7 @@ internal sealed class AnalyzeCommand(
 
         try
         {
-            return await RunAsync(Path.GetFullPath(settings.Folder), cancellation.Token);
+            return await RunAsync(folder.Folder!, cancellation.Token);
         }
         catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
         {

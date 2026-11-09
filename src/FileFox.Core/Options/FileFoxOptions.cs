@@ -5,6 +5,12 @@ public sealed class FileFoxOptions
 {
     public const string SectionName = "FileFox";
 
+    /// <summary>
+    /// Folder with the invoice PDFs. Used when no folder is given on the command line.
+    /// Environment variables like <c>%USERPROFILE%</c> are expanded. Empty means "not set".
+    /// </summary>
+    public string InvoiceFolder { get; set; } = "";
+
     /// <summary>Categories the language model may choose from.</summary>
     public List<CategoryOption> Categories { get; set; } = [];
 

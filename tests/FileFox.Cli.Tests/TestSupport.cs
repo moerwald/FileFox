@@ -1,6 +1,10 @@
 using FileFox.Cli.Composition;
 using FileFox.Core.Abstractions;
 using FileFox.Core.Models;
+using FileFox.Core.Options;
+using FileFox.Core.Services;
+using FileFox.Infrastructure.FileSystem;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Testing;
 using UglyToad.PdfPig.Content;
@@ -32,12 +36,20 @@ internal static class RepoPaths
 /// <summary>Runs the real CLI (same composition as Program) against a test console.</summary>
 internal static class CliTestHost
 {
-    public static async Task<(int ExitCode, string Output)> RunAsync(Action<IServiceCollection> overrides, params string[] args)
+    public static Task<(int ExitCode, string Output)> RunAsync(Action<IServiceCollection> overrides, params string[] args) =>
+        RunAsync(overrides, new Dictionary<string, string?>(), args);
+
+    /// <summary>Runs the CLI with <paramref name="settings"/> layered over the shipped appsettings.json.</summary>
+    public static async Task<(int ExitCode, string Output)> RunAsync(
+        Action<IServiceCollection> overrides, IDictionary<string, string?> settings, params string[] args)
     {
         var console = new TestConsole();
         console.Profile.Width = 250;
 
-        var configuration = CliComposition.BuildConfiguration(RepoPaths.CliProjectDirectory);
+        var configuration = new ConfigurationBuilder()
+            .AddConfiguration(CliComposition.BuildConfiguration(RepoPaths.CliProjectDirectory))
+            .AddInMemoryCollection(settings)
+            .Build();
         var services = new ServiceCollection().AddFileFoxCli(configuration, console);
         overrides(services);
 
@@ -86,6 +98,18 @@ internal sealed class FakeAnalysisService : IInvoiceAnalysisService
     public Func<string, InvoiceAnalysisResult> Analyze { get; set; } = Results.Ok;
 
     public List<string> Calls { get; } = [];
+
+    /// <summary>Value of <c>FileFox:InvoiceFolder</c> seen by the real folder resolver.</summary>
+    public string ConfiguredFolder { get; set; } = "";
+
+    public FolderResolution ResolveFolder(string? folderArgument)
+    {
+        Calls.Add("resolve");
+        var resolver = new InvoiceFolderResolver(
+            new FileSystemFolderReader(),
+            Microsoft.Extensions.Options.Options.Create(new FileFoxOptions { InvoiceFolder = ConfiguredFolder }));
+        return resolver.Resolve(folderArgument);
+    }
 
     public Task<ModelStatus> CheckModelAsync(CancellationToken cancellationToken = default)
     {

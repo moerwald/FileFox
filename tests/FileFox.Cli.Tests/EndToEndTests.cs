@@ -116,6 +116,27 @@ public sealed class EndToEndTests : IDisposable
     }
 
     [Fact]
+    [Trait("Spec", "F1-08")]
+    [Trait("Spec", "F1-82")]
+    public async Task Configured_invoice_folder_is_analyzed_without_an_argument()
+    {
+        SamplePdf.Write(_folder.File("Amazon.pdf"), "Amazon EU Invoice number INV-2026-0042 SanDisk USB stick 64 GB 12.99 EUR");
+
+        var (exitCode, output) = await CliTestHost.RunAsync(
+            services =>
+            {
+                services.AddSingleton<IInvoiceAnalyzer>(_model);
+                services.AddSingleton<ILanguageModelStatusProvider>(_model);
+            },
+            new Dictionary<string, string?> { ["FileFox:InvoiceFolder"] = _folder.Path },
+            "analyze");
+
+        Assert.Equal(0, exitCode);
+        Assert.Contains("Amazon.pdf", output);
+        Assert.Single(_model.ReceivedTexts);
+    }
+
+    [Fact]
     [Trait("Spec", "F1-07")]
     public async Task No_file_in_the_folder_is_changed()
     {

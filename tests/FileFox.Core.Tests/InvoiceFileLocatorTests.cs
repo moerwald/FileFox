@@ -8,6 +8,8 @@ public class InvoiceFileLocatorTests
     private sealed class FakeFolderReader(params string[] files) : IFolderReader
     {
         public IEnumerable<string> GetPdfFiles(string folder) => files.Select(f => Path.Combine(folder, f));
+
+        public bool FolderExists(string folder) => true;
     }
 
     [Fact]

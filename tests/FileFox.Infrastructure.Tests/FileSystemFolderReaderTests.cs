@@ -43,6 +43,18 @@ public sealed class FileSystemFolderReaderTests : IDisposable
 
     [Fact]
     [Trait("Spec", "F1-02")]
+    public void Folder_exists_only_for_existing_folders()
+    {
+        Touch("amazon.pdf");
+        var reader = new FileSystemFolderReader();
+
+        Assert.True(reader.FolderExists(_folder));
+        Assert.False(reader.FolderExists(Path.Combine(_folder, "does-not-exist")));
+        Assert.False(reader.FolderExists(Path.Combine(_folder, "amazon.pdf")));
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-02")]
     public void Missing_folder_throws()
     {
         var missing = Path.Combine(_folder, "does-not-exist");
