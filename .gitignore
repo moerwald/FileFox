@@ -1,0 +1,22 @@
+## .NET build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+publish/
+*.user
+*.suo
+
+## IDEs
+.vs/
+.vscode/
+.idea/
+
+## Test results
+TestResults/
+*.trx
+coverage*.xml
+
+## Local test data (never commit real invoices or bank statements)
+samples/private/
+*.local.json
