@@ -32,6 +32,9 @@ internal sealed class InvoiceRenderer(IAnsiConsole console)
     public void RenderNoInvoicesFound() =>
         console.MarkupLine($"[{Review}]No invoice PDFs found in this folder.[/]");
 
+    public void RenderError(string message) =>
+        console.MarkupLine($"[{Problem}]✗ {Markup.Escape(message)}[/]");
+
     public void RenderCancelled() =>
         console.MarkupLine($"[{Review}]Cancelled.[/]");
 

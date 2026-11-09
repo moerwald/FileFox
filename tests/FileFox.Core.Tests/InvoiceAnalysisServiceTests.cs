@@ -33,6 +33,8 @@ public class InvoiceAnalysisServiceTests
     private sealed class NoFolder : IFolderReader
     {
         public IEnumerable<string> GetPdfFiles(string folder) => [];
+
+        public bool FolderExists(string folder) => false;
     }
 
     private sealed class BrokenExtractor : IPdfTextExtractor
@@ -48,6 +50,7 @@ public class InvoiceAnalysisServiceTests
     {
         var options = TestData.Options();
         return new InvoiceAnalysisService(
+            new InvoiceFolderResolver(new NoFolder(), options),
             new InvoiceFileLocator(new NoFolder(), options),
             extractor,
             new PdfTypeDetector(options),

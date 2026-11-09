@@ -7,7 +7,7 @@ Later versions will match invoices to a bank statement and rename them to `MM-DD
 
 ## Status
 
-**Feature 1 – invoice analysis (CLI):** `filefox analyze <folder>` shows, for every invoice PDF in a folder:
+**Feature 1 – invoice analysis (CLI):** `filefox analyze [folder]` shows, for every invoice PDF in a folder:
 
 - company, invoice number, invoice date, total
 - every line item with quantity, amount and the category suggested by the model
@@ -44,6 +44,19 @@ dotnet publish src/FileFox.Cli -c Release -r win-x64 --self-contained false -o p
 publish\filefox.exe analyze "C:\Invoices\2026-11"
 ```
 
+If you always use the same folder, set it once in `appsettings.json` and leave out the argument:
+
+```json
+"FileFox": {
+  "InvoiceFolder": "%USERPROFILE%\\Documents\\Invoices",
+```
+
+```
+publish\filefox.exe analyze
+```
+
+A folder given on the command line always wins over the setting.
+
 Files whose name matches `*Kontoauszug*` or `*statement*` are treated as bank statements and skipped.
 
 ### Colors
@@ -61,7 +74,7 @@ Set the environment variable `NO_COLOR=1` to turn colors off.
 | Code | Meaning |
 |------|---------|
 | 0 | All invoices analyzed (some may need review) |
-| 1 | Ollama/model not available, or at least one invoice failed |
+| 1 | No folder given, folder not found, Ollama/model not available, or at least one invoice failed |
 | 130 | Cancelled with Ctrl+C |
 
 ## Configuration
@@ -76,6 +89,7 @@ All settings live in `src/FileFox.Cli/appsettings.json` (copied next to the exec
 | `Ollama:ContextLength` | Context window (`num_ctx`); increase for very long invoices |
 | `Ollama:RequestTimeoutSeconds` | Max. time per invoice |
 | `Ollama:MaxInvoiceCharacters` | Longer invoice texts are truncated |
+| `FileFox:InvoiceFolder` | Folder used when `analyze` is called without a folder. `%NAME%` environment variables are expanded. Empty = not set |
 | `FileFox:Categories` | Category names plus a description with examples – the description is what the model uses to decide |
 | `FileFox:FallbackCategory` | Used when the model returns an unknown category |
 | `FileFox:StatementFileNamePatterns` | File names that are bank statements, not invoices |

@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | Status | Accepted for implementation |
-| Command | `filefox analyze <folder>` |
+| Command | `filefox analyze [folder]` |
 | Sources | User requirements from the planning conversation, [01-overview.md](../plan/01-overview.md), [03-scan-detection.md](../plan/03-scan-detection.md), [05-architecture.md](../plan/05-architecture.md) |
 
 ## Goal
@@ -24,13 +24,15 @@ Feature 1 only *shows* information. It never changes files.
 
 | ID | Requirement |
 |----|-------------|
-| F1-01 | The command is `filefox analyze <folder>` with exactly one required folder argument. |
-| F1-02 | If the folder does not exist, FileFox shows an error and exits with a non-zero exit code. No invoice is analyzed. |
+| F1-01 | The command is `filefox analyze [folder]` with at most one folder argument. The argument is optional (see F1-08). |
+| F1-02 | If the folder (from the argument or from the setting, see F1-08) does not exist, FileFox shows an error that names the folder and exits with a non-zero exit code. No invoice is analyzed. |
 | F1-03 | Only PDF files directly inside the folder are considered. Subfolders are ignored. The `.pdf` extension is matched case-insensitively. |
 | F1-04 | Files whose name matches one of `FileFox:StatementFileNamePatterns` (wildcards `*` and `?`, case-insensitive) are bank statements and are **not** analyzed. Default patterns: `*Kontoauszug*`, `*statement*`. |
 | F1-05 | Invoices are processed in alphabetical order of their file name (case-insensitive). |
 | F1-06 | If the folder contains no invoice, FileFox says so and exits with code 0. |
 | F1-07 | FileFox does not create, change, rename or delete any file in the folder. |
+| F1-08 | If no folder argument is given, FileFox uses the folder in `FileFox:InvoiceFolder`. A folder argument always wins over the setting. Environment variables written as `%NAME%` in the setting are expanded (e.g. `%USERPROFILE%\Documents\Invoices`). Default: empty. |
+| F1-09 | If no folder argument is given and `FileFox:InvoiceFolder` is empty, FileFox shows an error that explains both ways to set the folder and exits with a non-zero exit code. No invoice is analyzed. |
 
 ## 2 Language model check
 
@@ -95,7 +97,7 @@ Feature 1 only *shows* information. It never changes files.
 | ID | Requirement |
 |----|-------------|
 | F1-70 | Exit code 0: all invoices were analyzed, skipped or need review, and none failed. |
-| F1-71 | Exit code 1: the model check failed (F1-11, F1-12) or at least one invoice failed. |
+| F1-71 | Exit code 1: no usable folder (F1-02, F1-09), the model check failed (F1-11, F1-12) or at least one invoice failed. |
 | F1-72 | Exit code 130: the user cancelled with Ctrl+C. *(manual)* |
 
 ## 9 Architecture and configuration

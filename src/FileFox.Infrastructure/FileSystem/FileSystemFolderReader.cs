@@ -21,4 +21,6 @@ public sealed class FileSystemFolderReader : IFolderReader
 
         return Directory.EnumerateFiles(folder, "*.pdf", Options);
     }
+
+    public bool FolderExists(string folder) => Directory.Exists(folder);
 }
