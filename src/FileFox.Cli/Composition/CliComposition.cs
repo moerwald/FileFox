@@ -41,7 +41,8 @@ internal static class CliComposition
 
             config.AddCommand<AnalyzeCommand>("analyze")
                 .WithDescription("Reads all invoice PDFs in a folder and shows the invoice data, the line items and the category suggested by the language model. Nothing is changed.")
-                .WithExample("analyze", @"C:\Invoices\2026-11");
+                .WithExample("analyze", @"C:\Invoices\2026-11")
+                .WithExample("analyze");
         });
         return app;
     }

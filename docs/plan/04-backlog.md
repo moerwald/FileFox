@@ -12,7 +12,7 @@
 
 | # | Feature | Status |
 |---|---------|--------|
-| 1 | `filefox analyze <folder>`: show invoice data, line items and suggested categories | Implemented (branch `feature/invoice-analysis`) |
+| 1 | `filefox analyze [folder]` (folder can also be set in `appsettings.json`): show invoice data, line items and suggested categories | Implemented (branch `feature/invoice-analysis`) |
 | 2 | Match invoices to bank statement bookings | Planned |
 | 3 | Rename invoices (`rename`, `undo`) | Planned |
 | 4 | WPF GUI | Planned |

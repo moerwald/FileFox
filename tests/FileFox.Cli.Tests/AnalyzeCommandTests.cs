@@ -15,26 +15,65 @@ public sealed class AnalyzeCommandTests : IDisposable
     private Task<(int ExitCode, string Output)> RunAnalyze(string? folder = null) =>
         CliTestHost.RunAsync(s => s.AddSingleton<IInvoiceAnalysisService>(_service), "analyze", folder ?? _folder.Path);
 
+    private Task<(int ExitCode, string Output)> RunAnalyzeWithoutArgument() =>
+        CliTestHost.RunAsync(s => s.AddSingleton<IInvoiceAnalysisService>(_service), "analyze");
+
     [Fact]
-    [Trait("Spec", "F1-01")]
     [Trait("Spec", "F1-02")]
+    [Trait("Spec", "F1-71")]
     public async Task Missing_folder_is_an_error_and_nothing_is_analyzed()
     {
-        var (exitCode, output) = await RunAnalyze(Path.Combine(_folder.Path, "does-not-exist"));
+        var missing = Path.Combine(_folder.Path, "does-not-exist");
 
-        Assert.NotEqual(0, exitCode);
+        var (exitCode, output) = await RunAnalyze(missing);
+
+        Assert.Equal(1, exitCode);
         Assert.Contains("Folder not found", output);
-        Assert.Empty(_service.Calls);
+        Assert.Contains("does-not-exist", output);
+        Assert.Equal(new[] { "resolve" }, _service.Calls);
     }
 
     [Fact]
     [Trait("Spec", "F1-01")]
-    public async Task Folder_argument_is_required()
+    [Trait("Spec", "F1-08")]
+    public async Task Without_argument_the_configured_folder_is_analyzed()
     {
-        var (exitCode, _) = await CliTestHost.RunAsync(s => s.AddSingleton<IInvoiceAnalysisService>(_service), "analyze");
+        _service.ConfiguredFolder = _folder.Path;
+        _service.Files = ["a.pdf"];
 
-        Assert.NotEqual(0, exitCode);
-        Assert.Empty(_service.Calls);
+        var (exitCode, output) = await RunAnalyzeWithoutArgument();
+
+        Assert.Equal(0, exitCode);
+        Assert.Equal(new[] { "resolve", "check", "find", "analyze:a.pdf" }, _service.Calls);
+        Assert.Contains(Path.GetFileName(_folder.Path), output);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-08")]
+    public async Task Folder_argument_wins_over_the_configured_folder()
+    {
+        using var other = new TempFolder();
+        _service.ConfiguredFolder = other.Path;
+
+        var (exitCode, output) = await RunAnalyze();
+
+        Assert.Equal(0, exitCode);
+        Assert.Contains(Path.GetFileName(_folder.Path), output);
+        Assert.DoesNotContain(Path.GetFileName(other.Path), output);
+    }
+
+    [Fact]
+    [Trait("Spec", "F1-09")]
+    [Trait("Spec", "F1-71")]
+    public async Task Without_argument_and_setting_an_error_explains_both_ways()
+    {
+        var (exitCode, output) = await RunAnalyzeWithoutArgument();
+
+        Assert.Equal(1, exitCode);
+        Assert.Contains("No folder given", output);
+        Assert.Contains("filefox analyze <folder>", output);
+        Assert.Contains("InvoiceFolder", output);
+        Assert.Equal(new[] { "resolve" }, _service.Calls);
     }
 
     [Fact]
@@ -45,7 +84,7 @@ public sealed class AnalyzeCommandTests : IDisposable
 
         await RunAnalyze();
 
-        Assert.Equal(new[] { "check", "find", "analyze:a.pdf", "analyze:b.pdf" }, _service.Calls);
+        Assert.Equal(new[] { "resolve", "check", "find", "analyze:a.pdf", "analyze:b.pdf" }, _service.Calls);
     }
 
     [Fact]
@@ -61,7 +100,7 @@ public sealed class AnalyzeCommandTests : IDisposable
 
         Assert.Equal(1, exitCode);
         Assert.Contains("ollama pull qwen2.5:7b", output);
-        Assert.Equal(new[] { "check" }, _service.Calls);
+        Assert.Equal(new[] { "resolve", "check" }, _service.Calls);
     }
 
     [Fact]

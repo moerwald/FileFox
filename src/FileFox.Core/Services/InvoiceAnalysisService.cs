@@ -6,6 +6,7 @@ namespace FileFox.Core.Services;
 
 /// <summary>Orchestrates the analysis of a single invoice: read PDF → detect scan → ask model → resolve categories.</summary>
 public sealed class InvoiceAnalysisService(
+    IInvoiceFolderResolver folderResolver,
     IInvoiceFileLocator fileLocator,
     IPdfTextExtractor textExtractor,
     IPdfTypeDetector typeDetector,
@@ -13,6 +14,8 @@ public sealed class InvoiceAnalysisService(
     IInvoiceCategoryResolver categoryResolver,
     ILanguageModelStatusProvider modelStatusProvider) : IInvoiceAnalysisService
 {
+    public FolderResolution ResolveFolder(string? folderArgument) => folderResolver.Resolve(folderArgument);
+
     public Task<ModelStatus> CheckModelAsync(CancellationToken cancellationToken = default) =>
         modelStatusProvider.CheckAsync(cancellationToken);
 
